@@ -68,6 +68,14 @@ def generate_control_card():
                 id='checklist-daytime'
             ),
             html.Br(),
+            html.P("Seleccione Estado del Estudiante"),
+            dcc.Checklist(
+                options=[{"label": j, "value": j} for j in df["Target"].unique()],
+                inline = True,
+                value=['Dropout', 'Enrolled', 'Graduate'],
+                id='checklist-target'
+            ),
+            html.Br(),
             html.Br(),
             html.Div(
                 id="reset-btn-outer",
@@ -114,7 +122,9 @@ app.layout =  html.Div(
             className="eight columns",
             children=[
                 dcc.Graph(id='bar-graph'),
-                html.Div(id='pandas-output')    
+                html.Br(),
+                dcc.Graph(id='bar-graph-daytime'),
+                html.Div(id='pandas-output')
             ],
         ),
 ])
@@ -123,15 +133,32 @@ app.layout =  html.Div(
 @app.callback(
     Output('bar-graph', 'figure'),
     Input('dropdown-course', 'value'),
-    Input('checklist-daytime', 'value')
+    Input('checklist-daytime', 'value'),
+    Input('checklist-target', 'value')
 )
-def update_output(course_value, daytime_value):
-    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value)]
+def update_output(course_value, daytime_value, target_value):
+    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value) & df['Target'].isin(target_value)]
     fig2 = px.histogram(filtered_df, x="Target", color = "Course", text_auto=True)
     fig2.update_layout(
         xaxis_title='Estado del Estudiante',
         yaxis_title='Conteo',
         title='Histograma de los Estados de los Estudiante'
+    )
+    return fig2 
+
+@app.callback(
+    Output('bar-graph-daytime', 'figure'),
+    Input('dropdown-course', 'value'),
+    Input('checklist-daytime', 'value'),
+    Input('checklist-target', 'value')
+)
+def update_output(course_value, daytime_value, target_value):
+    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value) & df['Target'].isin(target_value)]
+    fig2 = px.histogram(filtered_df, x="Target", color = "Daytime/evening attendance\t", text_auto=True)
+    fig2.update_layout(
+        xaxis_title='Jornada',
+        yaxis_title='Conteo',
+        title='Cantidad de estudiantes por jornada'
     )
     return fig2 
 
