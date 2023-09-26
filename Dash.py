@@ -13,26 +13,32 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv('C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data.csv', sep=';')
+rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data.csv"
+rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data.csv"
+
+df = pd.read_csv(rutaj, sep=';')
+
 course_list = df['Course'].unique().tolist()
 course_dict = {
-    33: "Biofuel Production Technologies",
-    171: "Animation and Multimedia Design",
-    8014: "Social Service (evening attendance)",
-    9003: "Agronomy",
-    9070: "Communication Design",
-    9085: "Veterinary Nursing",
-    9119: "Informatics Engineering",
-    9130: "Equinculture",
-    9147: "Management",
-    9238: "Social Service",
-    9254: "Tourism",
-    9500: "Nursing",
-    9556: "Oral Hygiene",
-    9670: "Advertising and Marketing Management",
-    9773: "Journalism and Communication",
-    9853: "Basic Education",
-    9991: "Management (evening attendance)"
+    33: "Biofuel Production Technologies",  # Ciencias exactas
+    171: "Animation and Multimedia Design", # Diseño
+    8014: "Social Service (evening attendance)", # Ciencias sociales
+    9003: "Agronomy", # Ciencias agrarias
+    9070: "Communication Design", # Diseño
+    9085: "Veterinary Nursing", # Ciencias de la salud
+    9119: "Informatics Engineering", # Ciencias exactas
+    9130: "Equinculture", # Ciencias agrarias
+    9147: "Management", # Ciencias exactas
+    9238: "Social Service", # Ciencias Sociales
+    9254: "Tourism", # Ciencias Sociales
+    9500: "Nursing", # Ciencias de la salud
+    9556: "Oral Hygiene", # Ciencias de la salud
+    9670: "Advertising and Marketing Management", # Diseño
+    9773: "Journalism and Communication", # Ciencias sociales
+    9853: "Basic Education", # Ciencias sociales
+    9991: "Management (evening attendance)" # Ciencias exactas
+
+    # Ciencias exactas, Diseño, Ciencias sociales, Ciencias agrarias, Ciencias de la salud
 }
 daytime_dict = {
     1: "Daytime",
