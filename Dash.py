@@ -16,7 +16,10 @@ import pandas as pd
 rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data.csv"
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data.csv"
 
-df = pd.read_csv(rutaj, sep=';')
+rutao_disc = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data_discreta.csv"
+
+df = pd.read_csv(rutao, sep=';')
+df_disc = pd.read_csv(rutao_disc, sep=';')
 
 course_list = df['Course'].unique().tolist()
 course_dict = {
@@ -58,7 +61,7 @@ def generate_control_card():
     return html.Div(
         id="control-card",
         children=[
-            html.P("Seleccione el Curso"),
+            html.B("Select Courses"),
             dcc.Dropdown(
                 options=[{"label": valor, "value": clave} for clave, valor in course_dict.items()],
                 value=course_list[:], 
@@ -66,7 +69,7 @@ def generate_control_card():
                 multi=True
             ),
             html.Br(),
-            html.P("Seleccione Jornada"),
+            html.P("Select daytime attendance"),
             dcc.Checklist(
                 options=[{"label": valor, "value": clave} for clave, valor in daytime_dict.items()],
                 inline = True,
@@ -74,19 +77,100 @@ def generate_control_card():
                 id='checklist-daytime'
             ),
             html.Br(),
-            html.P("Seleccione Estado del Estudiante"),
-            dcc.Checklist(
-                options=[{"label": j, "value": j} for j in df["Target"].unique()],
+        ],
+    )
+def generate_prediction_card():
+    """
+
+    :return: A Div containing controls for graphs.
+    """
+    return html.Div(
+        id="prediction-card",
+        children=[
+            html.Br(),
+            html.B("Select a discipline"),
+            dcc.Dropdown(
+                options=df_disc["course"].unique(), 
+                id='predict-course',
+                value = 'Diseno'
+                # inline = False
+            ),
+            html.Br(),
+            html.B("Select Daytime attendance"),
+            dcc.RadioItems(
+                options=df_disc["daytime/evening attendance"].unique(), 
+                id='predict-attendance',
                 inline = True,
-                value=['Dropout', 'Enrolled', 'Graduate'],
-                id='checklist-target'
+                value = 1
             ),
             html.Br(),
-            html.Br(),
-            html.Div(
-                id="reset-btn-outer",
-                children=html.Button(id="reset-btn", children="Reset", n_clicks=0),
+            html.B("Select Previous qualification grade level"),
+            dcc.Dropdown(
+                options=df_disc["previous qualification (grade)"].unique(), 
+                id='predict-qualification-grade',
+                value = 'Desemp. Basico'
             ),
+            html.Br(),
+            html.B("Select displaced"),
+            dcc.RadioItems(
+                options=df_disc["displaced"].unique(), 
+                id='predict-displaced',
+                inline = True,
+                value = 1
+            ),
+            html.Br(),
+            html.B("Select tuition fees up to date"),
+            dcc.RadioItems(
+                options=df_disc["tuition fees up to date"].unique(), 
+                id='predict-tuition-fees',
+                inline = True,
+                value = 1
+            ),
+            html.Br(),
+            html.B("Select Scholarship holder"),
+            dcc.RadioItems(
+                options=df_disc["scholarship holder"].sort_values(ascending = False).unique(), 
+                id='predict-scholarship',
+                inline = True,
+                value = 1
+            ),
+            html.Br(),
+            html.B("Select evaluations in 1st semester"),
+            dcc.Dropdown(
+                options=df_disc["curricular units 1st sem (evaluations)"].unique(), 
+                id='predict-evaluations',
+                value = 'MB'
+            ),
+            html.Br(),
+            html.B("Select grade in 1st semester"),
+            dcc.Dropdown(
+                options=df_disc["curricular units 1st sem (grade)"].unique(), 
+                id='predict-grade-1st',
+                value = 'Desemp. Muy Bajo'
+            ),
+            html.Br(),
+            html.B("Select Unemployment rate level"),
+            dcc.Dropdown(
+                options=df_disc["unemployment rate"].unique(), 
+                id='predict-unemployment',
+                value = 'Unemployment R. Bajo'
+            ),
+            html.Br(),
+            html.B("Select Inflation rate level"),
+            dcc.Dropdown(
+                options=df_disc["inflation rate"].unique(), 
+                id='predict-inflation',
+                value = 'M'
+            ),
+            html.Br(),
+            html.B("Select GDP level"),
+            dcc.Dropdown(
+                options=df_disc["gdp"].unique(), 
+                id='predict-gdp',
+                value = 'GDP. Muy Bajo'
+            ),
+            html.Br(),
+            html.Hr(),
         ],
     )
 
@@ -98,15 +182,28 @@ def description_card():
     return html.Div(
         id="description-card",
         children=[
-            html.H5("Clinical Analytics"),
-            html.H3("Welcome to the Clinical Analytics Dashboard"),
+            html.H5("Students Prediction"),
+            html.H3("Welcome to the Students Prediction Dashboard"),
             html.Div(
                 id="intro",
-                children="Explore clinic patient volume by time of day, waiting time, and care score. Click on the heatmap to visualize patient experience at different time points.",
+                children="The Dashboard was created in a project that aims to contribute to the reduction of academic dropout and failure in higher education, , by using a bayesian network technique to identify students at risk at an early stage of their academic path, so that strategies to support them can be put into place.",
+            )
+        ],
+    )
+def description_prediction():
+    """
+    :return: A description about levels to be set in prediction dash
+    """
+    return html.Div(
+        id="description-prediction",
+        children=[
+            html.H3("Other Visualizations"),
+            html.Div(
+                id="intro-prediction",
+                children="Select filters to see information",
             ),
         ],
     )
-
 
 app.layout =  html.Div(
     id="app-container",
@@ -115,7 +212,7 @@ app.layout =  html.Div(
         html.Div( 
             id="left-column",
             className="four columns",
-            children=[description_card(), generate_control_card()]
+            children=[ description_card(), generate_prediction_card(), description_prediction(), generate_control_card()]
             + [
                 html.Div(
                     ["initial child"], id="output-clientside", style={"display": "none"}
@@ -127,10 +224,11 @@ app.layout =  html.Div(
             id="right-column",
             className="eight columns",
             children=[
+                html.Div(id='pandas-output'),
                 dcc.Graph(id='bar-graph'),
                 html.Br(),
                 dcc.Graph(id='bar-graph-daytime'),
-                html.Div(id='pandas-output')
+                dcc.Graph(id='bar-graph-quality')
             ],
         ),
 ])
@@ -138,42 +236,63 @@ app.layout =  html.Div(
 
 @app.callback(
     Output('bar-graph', 'figure'),
+    Output('bar-graph-daytime', 'figure'),
+    Output('bar-graph-quality', 'figure'),
     Input('dropdown-course', 'value'),
-    Input('checklist-daytime', 'value'),
-    Input('checklist-target', 'value')
+    Input('checklist-daytime', 'value')
 )
-def update_output(course_value, daytime_value, target_value):
-    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value) & df['Target'].isin(target_value)]
+def update_output(course_value, daytime_value):
+    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value)]
     fig2 = px.histogram(filtered_df, x="Target", color = "Course", text_auto=True)
     fig2.update_layout(
         xaxis_title='Estado del Estudiante',
         yaxis_title='Conteo',
-        title='Histograma de los Estados de los Estudiante'
+        title='Histograma de los Estados de los Estudiantes'
     )
-    return fig2 
-
-@app.callback(
-    Output('bar-graph-daytime', 'figure'),
-    Input('dropdown-course', 'value'),
-    Input('checklist-daytime', 'value'),
-    Input('checklist-target', 'value')
-)
-def update_output(course_value, daytime_value, target_value):
-    filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value) & df['Target'].isin(target_value)]
-    fig2 = px.histogram(filtered_df, x="Target", color = "Daytime/evening attendance\t", text_auto=True)
-    fig2.update_layout(
+    fig3 = px.histogram(filtered_df, x="Target", color = "Daytime/evening attendance\t", text_auto=True)
+    fig3.update_layout(
         xaxis_title='Jornada',
         yaxis_title='Conteo',
         title='Cantidad de estudiantes por jornada'
     )
-    return fig2 
+    fig4 = px.histogram(filtered_df, x="Previous qualification (grade)", color = "Application mode", text_auto=True, nbins=10)
+    fig4.update_layout(
+        xaxis_title='Jornada',
+        yaxis_title='Conteo',
+        title='Cantidad de estudiantes por jornada'
+    )
+    return fig2, fig3, fig4
 
 @app.callback(
     Output('pandas-output', 'children'),
-    Input('dropdown-course', 'value')
+    Input('predict-course', 'value'),
+    Input('predict-attendance', 'value'),
+    Input('predict-qualification-grade', 'value'),
+    Input('predict-displaced', 'value'),
+    Input('predict-tuition-fees', 'value'),
+    Input('predict-scholarship', 'value'),
+    Input('predict-evaluations', 'value'),
+    Input('predict-grade-1st', 'value'),
+    Input('predict-unemployment', 'value'),
+    Input('predict-inflation', 'value'),
+    Input('predict-gdp', 'value')
 )
-def update_output(value):
-    return f'You have selected {value}'
+def update_output(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11):
+    df_pred = pd.DataFrame({
+        'course': [v1],
+        'daytime/evening attendance': [v2],
+        'previous qualification (grade)': [v3],
+        'displaced':[v4],
+        'tuition fees up to date':[v5],
+        'scholarship holder':[v6],
+        'curricular units 1st sem (evaluations)':[v7],
+        'curricular units 1st sem (grade)':[v8],
+        'unemployment rate':[v9],
+        'inflation rate':[v10],
+        'gdp':[v11]
+    })
+    prediccion = 'Graduate'
+    return f'Student will be: {prediccion}'
 
 if __name__ == '__main__':
     app.run_server(debug=True)
