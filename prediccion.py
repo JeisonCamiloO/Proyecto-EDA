@@ -11,19 +11,28 @@ os.chdir(rutaj)
 
 #Lectura de datos
 df = pd.read_csv("data_discreta.csv", header = 0, index_col=0, sep=";")
+#df_i = df_i.astype('category')
+
+#Dataframe para prediccion
+#df = df_i.loc[df_i["target"].isin(["Dropout","Graduate"])]
+
+#Dataframe Enrolled
+#df_enrolled = df_i.loc[df_i["target"].isin(["Enrolled"])]
+
+#print(df_enrolled.head())
 
 # Identificando columnas de tipo entero
-int_columns = df.select_dtypes(include=['int64', 'float64']).columns
+#int_columns = df.select_dtypes(include=['int64', 'float64']).columns
 
 # Cambiando el tipo de esas columnas a string
-df[int_columns] = df[int_columns].astype(str)
+#df[int_columns] = df[int_columns].astype(str)
 
 print(df.dtypes)
 
-print(df.head())
+#print(df.head())
 
-missing_data = df.isnull().sum()
-print(missing_data)
+#missing_data = df.isnull().sum()
+#print(missing_data)
 
 #Modelo con estructura inicial sin parámetros
 mod_fit_mv= BayesianNetwork([("target","displaced"),("target","course"),("target","daytime/evening attendance"), ("target","tuition fees up to date"), ("target","scholarship holder"), 
@@ -38,11 +47,11 @@ mod_fit_mv= BayesianNetwork([("target","displaced"),("target","course"),("target
 #División entre Train y Test
 from sklearn.model_selection import train_test_split
 
-train, test = train_test_split(df, test_size=0.20, random_state=42)
+train, test = train_test_split(df, test_size=0.20, random_state=101)
 
 
-print(train.head())
-print(test.head())
+#print(train.head())
+#print(test.head())
 
 '''
 index_to_remove = train[train['target'] == 'Graduate'].index[:616]  # Tomamos los primeros 2 índices
@@ -98,6 +107,25 @@ for i in range(len(test)):
                                           "gdp":gdp_v}, show_progress=False)
     pred.append(pred_test["target"])
 
+
+
+
+def prediccion_dash( ve: list):
+
+    pred_test = infer.map_query(["target"], 
+                            evidence={"course": ve[0], "daytime/evening attendance": ve[1], "previous qualification (grade)": ve[2], 
+                                        "displaced":ve[3], "tuition fees up to date": ve[4], "scholarship holder": ve[5], 
+                                        "curricular units 1st sem (evaluations)": ve[6], "curricular units 1st sem (grade)":ve[7],
+                                        "unemployment rate":ve[8], "inflation rate":ve[9],
+                                        "gdp":ve[10]}, show_progress=False)
+    return pred_test
+
+#print(pred)
+
+#print(prediccion_dash(df_enrolled.iloc[0]))
+
+
+
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
@@ -105,11 +133,11 @@ from sklearn.metrics import confusion_matrix
 print("Aciertos:", accuracy_score(test.loc[:,"target"], pred, normalize=False))
 print("Tasa de aciertos: ", accuracy_score(test.loc[:,"target"], pred))
 
-tn, fp, fn, tp = confusion_matrix(test.loc[:,"target"], pred, labels=["Dropout", "Graduate"]).ravel()
-
-encabezado = ["tn", "fp", "fn", "tp"]
-resultados = [tn, fp, fn, tp]
+tn = confusion_matrix(test.loc[:,"target"], pred, labels=["Dropout", "Graduate","Enrolled"]).ravel()
+print(tn)
+#encabezado = ["tn", "fp", "fn", "tp"]
+#resultados = [tn, fp, fn, tp]
 
 #Matriz de confusión
-result = pd.DataFrame( [resultados], columns=encabezado )
-print(result)
+#result = pd.DataFrame( [resultados], columns=encabezado )
+#print(result)
