@@ -11,7 +11,7 @@ from sklearn.metrics import confusion_matrix
 rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/"
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/"
 
-os.chdir(rutaj)
+os.chdir(rutao)
 
 #Lectura de datos
 df = pd.read_csv("data_discreta.csv", header = 0, index_col=0, sep=";")

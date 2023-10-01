@@ -9,20 +9,23 @@
 import dash
 from dash import dcc  # dash core components
 from dash import html # dash html components
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output 
 import plotly.express as px
 import pandas as pd
+import os 
+rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA"
+os.chdir(rutao)
+
 import prediccion
 
-rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data.csv"
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data.csv"
 
 rutao_disc = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data_discreta.csv"
 rutaj_disc = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data_discreta.csv"
 
 
-df = pd.read_csv(rutaj, sep=';')
-df_disc = pd.read_csv(rutaj_disc, sep=';')
+df = pd.read_csv("data.csv", sep=';')
+df_disc = pd.read_csv(rutao_disc, sep=';')
 
 course_list = df['Course'].unique().tolist()
 course_dict = {
@@ -189,7 +192,7 @@ def description_card():
             html.H3("Welcome to the Students Prediction Dashboard"),
             html.Div(
                 id="intro",
-                children="The Dashboard was created in a project that aims to contribute to the reduction of academic dropout and failure in higher education, , by using a bayesian network technique to identify students at risk at an early stage of their academic path, so that strategies to support them can be put into place.",
+                children="The Dashboard was created in a project that aims to contribute to the reduction of academic dropout and failure in higher education, by using a bayesian network technique to identify students at risk at an early stage of their academic path, so that strategies to support them can be put into place.",
             )
         ],
     )
@@ -207,14 +210,27 @@ def description_prediction():
             ),
         ],
     )
+def bayesian_network():
+    return html.Div(
+        id="bayesian_network",
+        children=[
+            
+        ],
+    )
 
 app.layout =  html.Div(
     id="app-container",
     children= [
+        # Banner
+        html.Div(
+            id="banner",
+            className="banner",
+            children=[html.Img(src=app.get_asset_url("logo_uniandes.png"))],
+        ),
         # Left column
         html.Div( 
             id="left-column",
-            className="four columns",
+            className="three columns",
             children=[ description_card(), generate_prediction_card(), description_prediction(), generate_control_card()]
             + [
                 html.Div(
@@ -226,12 +242,29 @@ app.layout =  html.Div(
         html.Div(
             id="right-column",
             className="eight columns",
-            children=[
-                html.Div(id='pandas-output'),
-                dcc.Graph(id='bar-graph'),
-                html.Br(),
-                dcc.Graph(id='bar-graph-daytime'),
-                dcc.Graph(id='bar-graph-quality')
+            children= [
+                html.Div(
+                    id="prediction-card",
+                    children = [
+                        html.H2("Bayesian Network to Predict Target"),
+                        html.Img(src=app.get_asset_url("RedBayesiana.png"), className='center'),
+                        html.Br(),
+                        html.H3("Prediction with selected values"),
+                        html.Div(id='selected-values'),
+                        html.Br(),
+                        html.H3("Real cases"),
+                        dcc.Graph(id='real-cases'),
+                    ],
+                ),
+                html.Div(
+                    id="other-graphs",
+                    children = [
+                        dcc.Graph(id='bar-graph'),
+                        html.Br(),
+                        dcc.Graph(id='bar-graph-daytime'),
+                        dcc.Graph(id='bar-graph-quality')
+                    ],
+                )
             ],
         ),
 ])
@@ -248,58 +281,88 @@ def update_output(course_value, daytime_value):
     filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value)]
     fig2 = px.histogram(filtered_df, x="Target", color = "Course", text_auto=True)
     fig2.update_layout(
-        xaxis_title='Estado del Estudiante',
-        yaxis_title='Conteo',
-        title='Histograma de los Estados de los Estudiantes'
+        xaxis_title='Target',
+        yaxis_title='Count',
+        title='Target by course Histogram'
     )
     fig3 = px.histogram(filtered_df, x="Target", color = "Daytime/evening attendance\t", text_auto=True)
     fig3.update_layout(
-        xaxis_title='Jornada',
-        yaxis_title='Conteo',
-        title='Cantidad de estudiantes por jornada'
+        xaxis_title='Target',
+        yaxis_title='Count',
+        title='Daytime/evening attendance Histogram'
     )
-    fig4 = px.histogram(filtered_df, x="Previous qualification (grade)", color = "Application mode", text_auto=True, nbins=10)
+    fig4 = px.histogram(filtered_df, x="Curricular units 1st sem (grade)", color = "Application mode", text_auto=True, nbins=10)
     fig4.update_layout(
-        xaxis_title='Jornada',
-        yaxis_title='Conteo',
-        title='Cantidad de estudiantes por jornada'
+        xaxis_title='curricular units 1st sem (grade)',
+        yaxis_title='Count',
+        title='1st sem grade Histogram by application mode'
     )
     return fig2, fig3, fig4
 
 @app.callback(
-    Output('pandas-output', 'children'),
-    Input('predict-course', 'value'),
-    Input('predict-attendance', 'value'),
-    Input('predict-qualification-grade', 'value'),
-    Input('predict-displaced', 'value'),
-    Input('predict-tuition-fees', 'value'),
-    Input('predict-scholarship', 'value'),
-    Input('predict-evaluations', 'value'),
-    Input('predict-grade-1st', 'value'),
-    Input('predict-unemployment', 'value'),
-    Input('predict-inflation', 'value'),
-    Input('predict-gdp', 'value')
+    [ Output('selected-values', 'children'),
+     Output('real-cases', 'figure')],
+    [Input('predict-course', 'value'),
+     Input('predict-attendance', 'value'),
+     Input('predict-qualification-grade', 'value'),
+     Input('predict-displaced', 'value'),
+     Input('predict-tuition-fees', 'value'),
+     Input('predict-scholarship', 'value'),
+     Input('predict-evaluations', 'value'),
+     Input('predict-grade-1st', 'value'),
+     Input('predict-unemployment', 'value'),
+     Input('predict-inflation', 'value'),
+     Input('predict-gdp', 'value')]
 )
-def update_output(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11):
-    '''
+def update_output(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11):
+    prediccion_resultado = prediccion.prediccion_dash([v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11])
+    
     df_pred = pd.DataFrame({
         'course': [v1],
-        'daytime/evening attendance': [v2],
-        'previous qualification (grade)': [v3],
-        'displaced':[v4],
-        'tuition fees up to date':[v5],
-        'scholarship holder':[v6],
-        'curricular units 1st sem (evaluations)':[v7],
-        'curricular units 1st sem (grade)':[v8],
-        'unemployment rate':[v9],
-        'inflation rate':[v10],
-        'gdp':[v11]
+        'daytime attendance': [v2],
+        'previous grade': [v3],
+        'displaced': [v4],
+        'tuition fees': [v5],
+        'scholarship': [v6],
+        '1st sem (evaluations)': [v7],
+        '1st sem (grade)': [v8],
+        'unemployment rate': [v9],
+        'inflation rate': [v10],
+        'gdp': [v11],
+        'prediction': [prediccion_resultado["target"]]
     })
-    '''
-    prediccion_resultado = prediccion.prediccion_dash([v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11])
-    return f'Student will be: {prediccion_resultado["target"]}'
+    
+    tabla = html.Table([
+        html.Tr([html.Th(col) for col in df_pred.columns]),
+        html.Tr([html.Td(df_pred.iloc[0][col]) for col in df_pred.columns])
+    ])
+    
+    # Filtrar el DataFrame df_disc
+    filtered_df = df_disc[
+        (df_disc['course'] == v1) &
+        (df_disc['daytime/evening attendance'] == v2) &
+        (df_disc['previous qualification (grade)'] == v3) &
+        (df_disc['displaced'] == v4) &
+        (df_disc['tuition fees up to date'] == v5) &
+        (df_disc['scholarship holder'] == v6) &
+        (df_disc['curricular units 1st sem (evaluations)'] == v7) &
+        (df_disc['curricular units 1st sem (grade)'] == v8) &
+        (df_disc['unemployment rate'] == v9) &
+        (df_disc['inflation rate'] == v10) &
+        (df_disc['gdp'] == v11)
+    ]
+    
+    fig2 = px.histogram(filtered_df, x="target", text_auto=True)
+    fig2.update_layout(
+        xaxis_title='Target',
+        yaxis_title='Count',
+        title='Target Histogram - Real cases'
+    )
+    
+    return tabla, fig2
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-#Hacer más gráficas
