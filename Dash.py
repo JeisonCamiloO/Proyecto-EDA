@@ -12,14 +12,17 @@ from dash import html # dash html components
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+import prediccion
 
 rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data.csv"
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data.csv"
 
 rutao_disc = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data_discreta.csv"
+rutaj_disc = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data_discreta.csv"
 
-df = pd.read_csv(rutao, sep=';')
-df_disc = pd.read_csv(rutao_disc, sep=';')
+
+df = pd.read_csv(rutaj, sep=';')
+df_disc = pd.read_csv(rutaj_disc, sep=';')
 
 course_list = df['Course'].unique().tolist()
 course_dict = {
@@ -279,6 +282,7 @@ def update_output(course_value, daytime_value):
     Input('predict-gdp', 'value')
 )
 def update_output(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11):
+    '''
     df_pred = pd.DataFrame({
         'course': [v1],
         'daytime/evening attendance': [v2],
@@ -292,8 +296,9 @@ def update_output(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11):
         'inflation rate':[v10],
         'gdp':[v11]
     })
-    prediccion = 'Graduate'
-    return f'Student will be: {prediccion}'
+    '''
+    prediccion_resultado = prediccion.prediccion_dash([v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11])
+    return f'Student will be: {prediccion_resultado["target"]}'
 
 if __name__ == '__main__':
     app.run_server(debug=True)
