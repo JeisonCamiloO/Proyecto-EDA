@@ -224,6 +224,7 @@ app.layout =  html.Div(
             id="right-column",
             className="eight columns",
             children=[
+                html.Img(src="C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/RedBayesiana.png"),
                 html.Div(id='pandas-output'),
                 dcc.Graph(id='bar-graph'),
                 html.Br(),
@@ -245,21 +246,21 @@ def update_output(course_value, daytime_value):
     filtered_df = df[df['Course'].isin(course_value) & df['Daytime/evening attendance\t'].isin(daytime_value)]
     fig2 = px.histogram(filtered_df, x="Target", color = "Course", text_auto=True)
     fig2.update_layout(
-        xaxis_title='Estado del Estudiante',
-        yaxis_title='Conteo',
-        title='Histograma de los Estados de los Estudiantes'
+        xaxis_title='Target',
+        yaxis_title='Count',
+        title='Target by course Histogram'
     )
     fig3 = px.histogram(filtered_df, x="Target", color = "Daytime/evening attendance\t", text_auto=True)
     fig3.update_layout(
-        xaxis_title='Jornada',
-        yaxis_title='Conteo',
-        title='Cantidad de estudiantes por jornada'
+        xaxis_title='Target',
+        yaxis_title='Count',
+        title='Daytime/evening attendance Histogram'
     )
-    fig4 = px.histogram(filtered_df, x="Previous qualification (grade)", color = "Application mode", text_auto=True, nbins=10)
+    fig4 = px.histogram(filtered_df, x="Curricular units 1st sem (grade)", color = "Application mode", text_auto=True, nbins=10)
     fig4.update_layout(
-        xaxis_title='Jornada',
-        yaxis_title='Conteo',
-        title='Cantidad de estudiantes por jornada'
+        xaxis_title='curricular units 1st sem (grade)',
+        yaxis_title='Count',
+        title='1st sem grade Histogram by application mode'
     )
     return fig2, fig3, fig4
 
