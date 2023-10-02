@@ -13,14 +13,14 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import os 
-rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA"
+rutao = "D:/OneDrive - Universidad de los Andes/Uniandes/Maestría/Tercer Semestre/Analitica Comp/Proyecto/eda"
 os.chdir(rutao)
 
 import prediccion
 
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data.csv"
 
-rutao_disc = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/data_discreta.csv"
+rutao_disc = "data_discreta.csv"
 rutaj_disc = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/data_discreta.csv"
 
 
@@ -91,7 +91,7 @@ def generate_prediction_card():
     :return: A Div containing controls for graphs.
     """
     return html.Div(
-        id="prediction-card",
+        id="prediction-card2",
         children=[
             html.Br(),
             html.B("Select a discipline"),
@@ -192,8 +192,13 @@ def description_card():
             html.H3("Welcome to the Students Prediction Dashboard"),
             html.Div(
                 id="intro",
-                children="The Dashboard was created in a project that aims to contribute to the reduction of academic dropout and failure in higher education, by using a bayesian network technique to identify students at risk at an early stage of their academic path, so that strategies to support them can be put into place.",
-            )
+                children="The Dashboard was created as part of a project with the objective of contributing to the reduction of academic dropout and failure in higher education. It leverages Bayesian network techniques to identify students at risk at an early stage of their academic journey. To generate a prediction and assess students' risk, please follow these steps:",
+            ),
+            html.Ol([
+                html.Li("Use the provided dropdown menus and checklist filters to select the relevant parameters and attributes related to the student's profile and academic situation."),
+                html.Li("After selecting the desired filters, view the selected values in the right panel and observe the generated prediction.."),
+                html.Li("Utilize the generated predictions to implement appropriate strategies and support measures to help students succeed in their academic endeavors.")
+            ]),
         ],
     )
 def description_prediction():
@@ -247,7 +252,7 @@ app.layout =  html.Div(
                     id="prediction-card",
                     children = [
                         html.H2("Bayesian Network to Predict Target"),
-                        html.Img(src=app.get_asset_url("RedBayesiana.png"), className='center'),
+                        html.Img(src=app.get_asset_url("RedBayesiana2.png"), className='center'),
                         html.Br(),
                         html.H3("Prediction with selected values"),
                         html.Div(id='selected-values'),
