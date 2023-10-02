@@ -13,8 +13,8 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import os 
-rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA"
-os.chdir(rutao)
+rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA"
+os.chdir(rutaj)
 
 import prediccion
 
@@ -25,7 +25,7 @@ rutaj_disc = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2
 
 
 df = pd.read_csv("data.csv", sep=';')
-df_disc = pd.read_csv(rutao_disc, sep=';')
+df_disc = pd.read_csv(rutaj_disc, sep=';')
 
 course_list = df['Course'].unique().tolist()
 course_dict = {
@@ -91,7 +91,7 @@ def generate_prediction_card():
     :return: A Div containing controls for graphs.
     """
     return html.Div(
-        id="prediction-card",
+        id="prediction-card2",
         children=[
             html.Br(),
             html.B("Select a discipline"),
