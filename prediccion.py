@@ -11,21 +11,16 @@ from sklearn.metrics import confusion_matrix
 rutao = "C:/Users/jeison.orjuela/Documents/Repo Git/Proyecto-EDA/"
 rutaj = "C:/Users/jgvm/OneDrive/Escritorio/Maestria/Primer Semestre (2023-2)/Analitica Computacional para la Toma de Decisiones/Proyecto/Proyecto-EDA/"
 
-os.chdir(rutao)
+os.chdir(rutaj)
 
 #Lectura de datos
 df = pd.read_csv("data_discreta.csv", header = 0, index_col=0, sep=";")
 df = df.astype('category')
 
 #Modelo con estructura inicial sin parámetros
-mod_fit_mv= BayesianNetwork([("target","displaced"),("target","course"),("target","daytime/evening attendance"), ("target","tuition fees up to date"), ("target","scholarship holder"), 
-                             ("scholarship holder","curricular units 1st sem (grade)"), 
-                             ("curricular units 1st sem (grade)","curricular units 1st sem (evaluations)"), 
-                             ("curricular units 1st sem (grade)","previous qualification (grade)"),
-                             ("tuition fees up to date","unemployment rate"),("tuition fees up to date","inflation rate"),
-                             ("inflation rate", "gdp"),
-                             ("unemployment rate","gdp"),
-                             ("daytime/evening attendance","unemployment rate")])
+mod_fit_mv= BayesianNetwork([("curricular units 1st sem (grade)","target"),("course","target"), ("tuition fees up to date","target"), ("scholarship holder","target"), 
+                             ("daytime/evening attendance","course"), ("curricular units 1st sem (evaluations)","course"),("displaced","tuition fees up to date"),
+                             ("unemployment rate","displaced"),("inflation rate","displaced"),("gdp","displaced"),("curricular units 1st sem (evaluations)","previous qualification (grade)")])
 
 #División entre Train y Test
 train, test = train_test_split(df, test_size=0.20, random_state=101)
